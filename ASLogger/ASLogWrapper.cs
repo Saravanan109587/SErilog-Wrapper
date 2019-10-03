@@ -9,18 +9,21 @@ namespace ASLogger
 {
     public class ASLogProvider : IAslogger
     {
-        public static Logger logg;
+        public static Logger logg =null;
         public ASLogProvider(string serverURL)
         {
             //logg = new LoggerConfiguration()              
             //   .WriteTo.Http(serverURL, httpClient: new CustomHttpClient())
             //   .CreateLogger();
-            string path = AppDomain.CurrentDomain.BaseDirectory;
-            logg = new LoggerConfiguration()
-            .WriteTo.File(path + @"logs\Aslog.txt", rollingInterval: RollingInterval.Day)
-            .WriteTo.Http(serverURL, httpClient: new CustomHttpClient())
-            .CreateLogger();
-            logg.Debug("from Logger");
+            if(logg == null)
+            {
+                string path = AppDomain.CurrentDomain.BaseDirectory;
+                logg = new LoggerConfiguration()
+                .WriteTo.File(path + @"logs\Aslog.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7, rollOnFileSizeLimit: true, fileSizeLimitBytes: 123456)
+                .WriteTo.Http(serverURL, httpClient: new CustomHttpClient())
+                .CreateLogger();
+                logg.Debug("from Logger");
+            }          
         }
 
         public void Debug(string msg, params object[] param)
